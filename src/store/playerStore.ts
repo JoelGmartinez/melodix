@@ -29,7 +29,7 @@ interface PlayerStore {
   playlists: Playlist[];
   isLoading: boolean;
 
-  currentView: 'home' | 'playlist' | 'liked' | 'recent' | 'songs';
+  currentView: 'home' | 'playlist' | 'liked' | 'recent' | 'songs' | 'library';
   activePlaylistId: string | null;
 
   currentTrack: Track | null;
@@ -58,7 +58,7 @@ interface PlayerStore {
   deleteTrackPermanently: (trackId: string) => Promise<void>;
   reorderTracks: (playlistId: string, fromIndex: number, toIndex: number) => Promise<void>;
 
-  setView: (view: 'home' | 'playlist' | 'liked' | 'recent' | 'songs', playlistId?: string) => void;
+  setView: (view: 'home' | 'playlist' | 'liked' | 'recent' | 'songs' | 'library', playlistId?: string) => void;
 
   playTrack: (track: Track, queueTracks?: Track[]) => void;
   playPlaylist: (playlist: Playlist) => void;

@@ -115,7 +115,7 @@ export default function PlayerBar() {
       </div>
 
       {/* MOBILE COLLAPSED */}
-      <div className="md:hidden h-14 bg-[#181818] relative flex items-center px-3 gap-2 flex-shrink-0 rounded-2xl overflow-hidden mx-4 shadow-lg shadow-black/40">
+      <div className="md:hidden h-14 bg-[#181818] relative flex items-center px-3 gap-2 flex-shrink-0 rounded-2xl overflow-hidden mx-4 mb-[5px] shadow-lg shadow-black/40">
         <div className="absolute top-0 left-0 right-0 h-[3px] bg-[#4d4d4d]">
           <div className="h-full bg-[#1db954] transition-all" style={{ width: `${progress}%` }} />
         </div>

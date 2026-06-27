@@ -1,15 +1,19 @@
 import { Search, X, ChevronLeft, ChevronRight, Upload } from 'lucide-react';
 import { usePlayerStore } from '../store/playerStore';
 
-export default function TopBar() {
-  const { searchQuery, setSearchQuery, currentView, setView, activePlaylistId, setShowUploadModal } = usePlayerStore();
+interface Props {
+  searchInputRef?: React.RefObject<HTMLInputElement | null>;
+}
 
-  const canGoBack = currentView !== 'home';
+export default function TopBar({ searchInputRef }: Props) {
+  const { searchQuery, setSearchQuery, currentView, setView, setShowUploadModal } = usePlayerStore();
+
+  const canGoBack = currentView !== 'home' && currentView !== 'library';
 
   return (
     <div className="flex items-center gap-4 px-6 py-3 bg-[#121212]/80 backdrop-blur-md flex-shrink-0 sticky top-0 z-20">
-      {/* Navigation Arrows */}
-      <div className="flex items-center gap-2">
+      {/* Navigation Arrows - solo desktop */}
+      <div className="hidden md:flex items-center gap-2">
         <button
           onClick={() => setView('home')}
           disabled={!canGoBack}
@@ -29,6 +33,7 @@ export default function TopBar() {
       <div className="relative flex-1 max-w-lg">
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#b3b3b3]" />
         <input
+          ref={searchInputRef}
           type="text"
           placeholder="¿Qué quieres escuchar?"
           value={searchQuery}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { usePlayerStore } from './store/playerStore';
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
@@ -11,11 +11,14 @@ import SongsView from './components/SongsView';
 import SearchView from './components/SearchView';
 import QueuePanel from './components/QueuePanel';
 import UploadModal from './components/UploadModal';
+import MobileBottomNav from './components/MobileBottomNav';
+import MobileLibraryView from './components/MobileLibraryView';
 import { Menu, X } from 'lucide-react';
 
 export default function App() {
   const { loadLibrary, currentView, showUploadModal, showQueue, searchQuery, isLoading } = usePlayerStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     loadLibrary();
@@ -30,6 +33,7 @@ export default function App() {
       case 'liked': return <LikedView />;
       case 'recent': return <RecentView />;
       case 'songs': return <SongsView />;
+      case 'library': return <MobileLibraryView />;
       default: return <HomeView />;
     }
   };
@@ -92,7 +96,7 @@ export default function App() {
             >
               {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
-            <TopBar />
+            <TopBar searchInputRef={searchInputRef} />
           </div>
 
           {/* Content Views */}
@@ -111,8 +115,11 @@ export default function App() {
         </main>
       </div>
 
-      {/* Player Bar - Fixed at Bottom */}
+      {/* Player Bar */}
       <PlayerBar />
+
+      {/* Mobile Bottom Nav */}
+      <MobileBottomNav searchInputRef={searchInputRef} />
 
       {/* Upload Modal */}
       {showUploadModal && <UploadModal />}

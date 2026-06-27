@@ -17,7 +17,14 @@ interface ID3Tags {
 
 function decodeString(bytes: Uint8Array, encoding: number): string {
   try {
-    if (encoding === 0) return new TextDecoder('iso-8859-1').decode(bytes);
+    if (encoding === 0) {
+      // Muchos archivos marcan encoding=0 (ISO-8859-1) pero usan UTF-8
+      try {
+        return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+      } catch {
+        return new TextDecoder('iso-8859-1').decode(bytes);
+      }
+    }
     if (encoding === 1 || encoding === 2) {
       // UTF-16 with BOM
       return new TextDecoder('utf-16').decode(bytes);
