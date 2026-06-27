@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { Track } from '../types';
 
@@ -16,6 +17,10 @@ export default function VirtualizedTrackList({ tracks, scrollRef, renderRow, row
     estimateSize: () => rowHeight,
     overscan,
   });
+
+  useEffect(() => {
+    virtualizer.measure();
+  }, [tracks.length]);
 
   return (
     <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>

@@ -167,7 +167,7 @@ export function getPlaylistColor(index: number): string {
 
 export async function parseAudioFile(
   file: File,
-  playlistId: string
+  playlistId?: string
 ): Promise<{ track: Track; blob: Blob }> {
   const [tags, duration] = await Promise.all([
     readID3Tags(file),

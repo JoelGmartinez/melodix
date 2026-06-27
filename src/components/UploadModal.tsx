@@ -10,10 +10,6 @@ function isAudioFile(file: File): boolean {
   return AUDIO_EXTENSIONS.some(ext => name.endsWith(ext));
 }
 
-function generateId(): string {
-  return crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36);
-}
-
 interface UploadState {
   status: 'idle' | 'processing' | 'done' | 'error';
   total: number;
@@ -47,11 +43,26 @@ export default function UploadModal() {
     for (let i = 0; i < audioFiles.length; i++) {
       const file = audioFiles[i];
       setUploadState(s => ({ ...s, current: i + 1, currentFile: file.name }));
-      const { track, blob } = await parseAudioFile(file, generateId());
-      items.push({ track: { ...track, playlistId: undefined }, blob });
+      try {
+        const { track, blob } = await parseAudioFile(file);
+        items.push({ track, blob });
+      } catch (err) {
+        console.error('Error parsing file:', file.name, err);
+      }
     }
 
-    await addTracks(items);
+    if (items.length === 0) {
+      setUploadState({ status: 'error', total: 0, current: 0, currentFile: '', error: 'No se pudieron leer los archivos de audio.' });
+      return;
+    }
+
+    try {
+      await addTracks(items);
+    } catch (err) {
+      console.error('Error saving tracks:', err);
+      setUploadState({ status: 'error', total: 0, current: 0, currentFile: '', error: 'Error al guardar las canciones en la biblioteca.' });
+      return;
+    }
 
     setUploadState(s => ({ ...s, status: 'done', current: audioFiles.length }));
     setTimeout(() => setShowUploadModal(false), 1500);

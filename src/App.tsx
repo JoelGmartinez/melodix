@@ -58,7 +58,7 @@ export default function App() {
   }
 
   return (
-    <div className="h-screen w-screen bg-[#121212] flex flex-col overflow-hidden">
+    <div className="h-dvh w-screen bg-[#121212] flex flex-col overflow-hidden pb-[env(safe-area-inset-bottom,0px)]">
       {/* Main Layout: Sidebar + Content + Queue */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* Mobile Sidebar Overlay */}

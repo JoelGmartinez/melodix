@@ -81,16 +81,20 @@ export async function getAllTracks(): Promise<Track[]> {
   // Migrate v1 → v2: extract embedded fileBlob to separate audioFiles store
   const needsMigration = tracks.some(t => (t as any).fileBlob !== undefined);
   if (needsMigration) {
-    const tx = database.transaction(['tracks', 'audioFiles'], 'readwrite');
-    for (const raw of tracks) {
-      const old = raw as any;
-      if (old.fileBlob) {
-        tx.objectStore('audioFiles').put({ id: raw.id, blob: old.fileBlob });
-        delete old.fileBlob;
-        tx.objectStore('tracks').put(raw);
+    try {
+      const tx = database.transaction(['tracks', 'audioFiles'], 'readwrite');
+      for (const raw of tracks) {
+        const old = raw as any;
+        if (old.fileBlob) {
+          tx.objectStore('audioFiles').put({ id: raw.id, blob: old.fileBlob });
+          delete old.fileBlob;
+          tx.objectStore('tracks').put(raw);
+        }
       }
+      await tx.done;
+    } catch (e) {
+      console.error('Migration failed, tracks returned without blobs:', e);
     }
-    await tx.done;
   }
 
   return tracks;

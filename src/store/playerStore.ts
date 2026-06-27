@@ -224,12 +224,17 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   },
 
   addTracks: async (items) => {
+    console.log(`[addTracks] saving ${items.length} tracks...`);
     try {
-      await IndexedDBRepository.saveTracksBatch(items.map(i => ({ track: i.track, blob: i.blob })));
+      for (const { track, blob } of items) {
+        console.log(`[addTracks] saving track: ${track.title} (${track.id})`);
+        await IndexedDBRepository.saveTrack(track, blob);
+      }
     } catch (e) {
-      console.error('Failed to save tracks:', e);
+      console.error('[addTracks] FAILED:', e);
       return;
     }
+    console.log('[addTracks] all saved, updating store...');
     const { trackEntities, trackIds } = get();
     const newEntities = { ...trackEntities };
     const newIds = [...trackIds];
@@ -238,6 +243,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       newIds.push(track.id);
     }
     set({ trackEntities: newEntities, trackIds: newIds });
+    console.log(`[addTracks] done. trackIds now: ${newIds.length}`);
   },
 
   addTrackToPlaylist: async (trackId, playlistId) => {
