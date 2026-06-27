@@ -104,18 +104,13 @@ export async function saveTrack(track: Track): Promise<void> {
 export async function saveTracksBatch(tracks: Track[], blobs: (Blob | null)[]): Promise<void> {
   const database = await getDB();
   const tx = database.transaction(['tracks', 'audioFiles'], 'readwrite');
-  try {
-    for (let i = 0; i < tracks.length; i++) {
-      await tx.objectStore('tracks').put(tracks[i]);
-      if (blobs[i]) {
-        await tx.objectStore('audioFiles').put({ id: tracks[i].id, blob: blobs[i]! });
-      }
+  for (let i = 0; i < tracks.length; i++) {
+    tx.objectStore('tracks').put(tracks[i]);
+    if (blobs[i]) {
+      tx.objectStore('audioFiles').put({ id: tracks[i].id, blob: blobs[i]! });
     }
-    await tx.done;
-  } catch (e) {
-    tx.abort();
-    throw e;
   }
+  await tx.done;
 }
 
 export async function updateTrack(track: Track): Promise<void> {
@@ -126,22 +121,17 @@ export async function updateTrack(track: Track): Promise<void> {
 export async function updateTracksBatch(tracks: Track[]): Promise<void> {
   const database = await getDB();
   const tx = database.transaction('tracks', 'readwrite');
-  try {
-    for (const track of tracks) {
-      await tx.objectStore('tracks').put(track);
-    }
-    await tx.done;
-  } catch (e) {
-    tx.abort();
-    throw e;
+  for (const track of tracks) {
+    tx.objectStore('tracks').put(track);
   }
+  await tx.done;
 }
 
 export async function deleteTrack(id: string): Promise<void> {
   const database = await getDB();
   const tx = database.transaction(['tracks', 'audioFiles'], 'readwrite');
-  await tx.objectStore('tracks').delete(id);
-  await tx.objectStore('audioFiles').delete(id);
+  tx.objectStore('tracks').delete(id);
+  tx.objectStore('audioFiles').delete(id);
   await tx.done;
 }
 
